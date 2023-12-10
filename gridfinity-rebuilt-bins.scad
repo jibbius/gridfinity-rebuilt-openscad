@@ -158,24 +158,72 @@ gridfinityBase(gx, gy, 42, 0, 0, 1);
 
 // Clear front bin, 3 x 1 x 6, perfect for a microscope slide.
 // Needs supports to hold up the label bar, because there is no front to build off.
+
 /*
-glassz = 25.2; // size of the microscope glass.
-glassx = 76.5; 
+// [Window Bin Settings]
+
+// Windows to add. Generally, use gridx / 2 (i.e. 1 window for every 2 bases).
+window_count = 2; 
+
+// height of the microscope glass. Standard = 1" (25.2)
+glassz = 25.2;
+
+// width of the microscope glass. Standard = 3" (76.5)
+glassx = 76.5;
+
+// thickness of the microscope glass.
 glassy = 1.25;
-gx = 2;  
-dx = 3;
+
+// additional thickness to add to insertion slot
+glassy_tolerance = 0.02;
+
+// how far into the base that the glass shall be inserted. 0 = flush.
+glassz_depth = 5;
+
+// Frame width (holds the glass in place)
+window_frame = 5; 
+
+// Assist insertion of the frame, by chamfering the edge?
+add_insertion_chamfer = true;
+
+// Probably dont touch this.
+chamfer_length = 10;
+
+// Probably dont touch this.
+chamfer_angle = 10;
+
+// Probably dont touch this.
+chamfer_z_pos = 1.9;
+
+gx = gridx;
+dx = divx;
+y_pos = length/2*gridy; // Works
+
 difference() {
     union() {
         gridfinityInit(gx, gridy, height(gridz, gridz_define, enable_lip, enable_zsnap), height_internal, length) {
 
             cutEqual(n_divx = dx, n_divy = divy, style_tab = style_tab, enable_scoop = enable_scoop);
         }
-        gridfinityBase(gx, gridy, length, div_base_x, div_base_y, style_hole);
+     gridfinityBase(gx, gridy, length, div_base_x, div_base_y, style_hole);
     }
-    translate([-glassx/2, length/2 - glassy*2 + 0.00, 2.9]) cube([glassx, glassy + 0.02, glassz+5]);
-    translate([-(glassx-5)/2, length/2 - glassy, 2.9]) cube([glassx-5, glassy*3+0.02, glassz+5]);
-    // chamfer to make it easier to slide the glass in.
-    translate([-glassx/2 - 1, length/2 - glassy*2 + 0.00, 1.9]) rotate([0,10,0]) cube([5, glassy + 0.02, 10]);
-    mirror([1,0,0]) translate([-glassx/2 - 1, length/2 - glassy*2 + 0.00, 1.9]) rotate([0,10,0]) cube([5, glassy + 0.02, 10]);
+    if(window_count>=1){
+        glassx_margin = (( length * gridx / window_count ) -  glassx )/2;
+        for (i = [1:window_count]){
+            x_pos = glassx_margin + ((i-1)*glassx_margin*2) + ((i-1)*glassx) - (( length * gridx )/2);
+            // Glass insertion slot;
+            translate([x_pos, y_pos - glassy*2, 2.9]) cube([glassx, glassy + glassy_tolerance, glassz+glassz_depth]);
+
+            // Window;
+            translate([x_pos + window_frame/2, y_pos - glassy, 2.9]) cube([glassx-window_frame, glassy*3+0.02, glassz+glassz_depth]);
+            
+            // chamfer to make it easier to slide the glass in.
+            translate([x_pos - 1, y_pos - glassy*2, chamfer_z_pos]) rotate([0,chamfer_angle,0]) cube([5, glassy + glassy_tolerance, chamfer_length]);
+            mirror([1,0,0])
+            translate([x_pos - 1, y_pos - glassy*2, chamfer_z_pos]) rotate([0,chamfer_angle,0]) cube([5, glassy + glassy_tolerance, chamfer_length]);
+
+        }
+    }
+    
 }
 */
